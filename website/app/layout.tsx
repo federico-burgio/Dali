@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zonebar.karti.dev"),
   title: "ZoneBar — World clocks, beautifully close",
+  alternates: { canonical: "/" },
   description:
     "A lightweight native macOS menu bar app for world clocks and effortless timezone coordination.",
   icons: {
@@ -51,9 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${manrope.variable} ${plexMono.variable} antialiased`}
-      >
+      <body>
         {children}
       </body>
     </html>

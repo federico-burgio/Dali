@@ -1,383 +1,50 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import { Bug, Lightbulb } from "lucide-react";
-
-const downloadUrl = "https://github.com/kkz6/ZoneBar/releases/latest/download/ZoneBar.dmg";
-const sourceUrl = "https://github.com/kkz6/ZoneBar";
-const issueUrl = "https://github.com/kkz6/ZoneBar/issues/new?template=bug_report.yml";
-const featureUrl = "https://github.com/kkz6/ZoneBar/issues/new?template=feature_request.yml";
-
-function GitHubMark() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2.24c-3.22.7-3.9-1.37-3.9-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18A10.9 10.9 0 0 1 12 6.11c.98 0 1.95.13 2.87.39 2.19-1.49 3.15-1.18 3.15-1.18.64 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.7 5.38-5.28 5.67.42.36.79 1.06.79 2.14v3.28c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"
-      />
-    </svg>
-  );
-}
-
-const clockDefinitions = [
-  { city: "San Francisco", code: "SFO", timeZone: "America/Los_Angeles", fallbackTime: "09:41", fallbackOffset: "GMT−7" },
-  { city: "London", code: "LON", timeZone: "Europe/London", fallbackTime: "17:41", fallbackOffset: "GMT+1" },
-  { city: "Bengaluru", code: "BLR", timeZone: "Asia/Kolkata", fallbackTime: "22:11", fallbackOffset: "GMT+5:30" },
-  { city: "Tokyo", code: "TKY", timeZone: "Asia/Tokyo", fallbackTime: "01:41", fallbackOffset: "GMT+9" },
-];
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock3, Focus, Globe2, Monitor, Plus, Minus, ShieldCheck } from "lucide-react";
+import { DownloadButton, SiteFooter, SiteHeader } from "./components/SiteChrome";
+import ClockPreview from "./components/ClockPreview";
 
 const features = [
-  {
-    index: "01",
-    title: "All your timezones, one click away",
-    copy: "City time, GMT offset, day or night, and tomorrow/yesterday context in a compact native popover.",
-    visual: "clocks",
-  },
-  {
-    index: "02",
-    title: "Find a meeting time without the math",
-    copy: "Drag the timeline and every clock moves together. A green marker shows when working hours overlap.",
-    visual: "scrub",
-  },
-  {
-    index: "03",
-    title: "Make the menu bar fit your workflow",
-    copy: "Choose visible clocks, compact city labels, 12- or 24-hour time, date display, and separators.",
-    visual: "menu",
-  },
-  {
-    index: "04",
-    title: "Native, offline, and private",
-    copy: "Built in SwiftUI. No account, analytics, subscription, or network connection. Your clocks stay on your Mac.",
-    visual: "private",
-  },
+  { icon: Globe2, label: "WORLD CLOCKS", title: "Your people. Their time.", text: "Keep your team's cities together, with local time, GMT offsets, and clear day and night indicators.", chips: ["176+ cities", "Day & night"], link: "clocks" },
+  { icon: Clock3, label: "TIME COMPARISON", title: "A good time for everyone.", text: "Move the timeline and every clock follows. Find overlapping working hours without doing the timezone math.", chips: ["Time scrubber", "Working hours"], link: "compare" },
+  { icon: Monitor, label: "MENU BAR", title: "A little more your own.", text: "Choose the clocks you see, shorten city names, and make the time format and separators feel right for you.", chips: ["Compact labels", "12 or 24 hour"], link: "menu-bar" },
+  { icon: Focus, label: "FOCUS", title: "The right clocks, right now.", text: "Choose clocks for a macOS Focus. Your usual selection returns when the Focus ends, with every saved city kept in place.", chips: ["Focus filters", "Show all"], link: "focus" },
+  { icon: CalendarDays, label: "CALENDAR", title: "See the rest of your day.", text: "Connect Calendar to see events and unavailable time on the timeline. Choose which calendars appear and open events in Calendar.", chips: ["Optional access", "On-device"], link: "calendar" },
+  { icon: ShieldCheck, label: "MADE FOR MAC", title: "Quietly at home on your Mac.", text: "Native controls, light and dark appearances, optional launch at login, and signed app updates. No account to create.", chips: ["Native macOS", "Automatic updates"], link: "updates" },
+];
+const faqs = [
+  ["Is ZoneBar free?", "Yes. ZoneBar is free and open source under the MIT license. You can inspect the code, report issues, and contribute on GitHub."],
+  ["Which Macs are supported?", "ZoneBar runs on macOS 14 Sonoma or later. The current release supports Apple silicon and Intel Macs."],
+  ["Does it work offline?", "Yes. World clocks and time comparison work offline. The app connects to GitHub to check for and download updates; your clock settings stay on your Mac."],
+  ["Do I have to connect my calendar?", "No. Calendar access is optional and requested only when you choose to connect it. Calendar data is read on-device and is not sent to a ZoneBar server."],
+  ["How do updates work?", "Choose About → Check for Updates, or enable automatic checks. Published downloads are Developer ID signed and notarized by Apple, and the updater verifies signed updates."],
+  ["Can it open when I log in?", "Yes. Turn on Launch at login in ZoneBar's General settings. The app lives in your menu bar without adding a Dock icon."],
 ];
 
-function dateParts(date: Date, timeZone?: string) {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-
-  return Object.fromEntries(
-    parts
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, Number(part.value)]),
-  ) as Record<"year" | "month" | "day" | "hour", number>;
-}
-
-function relativeDay(now: Date, timeZone: string) {
-  const local = dateParts(now);
-  const target = dateParts(now, timeZone);
-  const localDay = Date.UTC(local.year, local.month - 1, local.day);
-  const targetDay = Date.UTC(target.year, target.month - 1, target.day);
-  const difference = Math.round((targetDay - localDay) / 86_400_000);
-
-  if (difference === 1) return "+1";
-  if (difference === -1) return "−1";
-  return undefined;
-}
-
-function ClockPopover() {
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    const initialUpdate = window.setTimeout(() => setNow(new Date()), 0);
-    const timer = window.setInterval(() => setNow(new Date()), 30_000);
-    return () => {
-      window.clearTimeout(initialUpdate);
-      window.clearInterval(timer);
-    };
-  }, []);
-
-  const clocks = useMemo(() => clockDefinitions.map((clock) => {
-    if (!now) {
-      return {
-        ...clock,
-        time: clock.fallbackTime,
-        offset: clock.fallbackOffset,
-        active: clock.city === "San Francisco" || clock.city === "London",
-        day: clock.city === "Tokyo" ? "+1" : undefined,
-      };
-    }
-
-    const hour = dateParts(now, clock.timeZone).hour;
-    const offset = new Intl.DateTimeFormat("en-US", {
-      timeZone: clock.timeZone,
-      timeZoneName: "shortOffset",
-    }).formatToParts(now).find((part) => part.type === "timeZoneName")?.value
-      .replace("-", "−") ?? clock.fallbackOffset;
-
-    return {
-      ...clock,
-      time: new Intl.DateTimeFormat("en-GB", {
-        timeZone: clock.timeZone,
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23",
-      }).format(now),
-      offset,
-      active: hour >= 6 && hour < 20,
-      day: relativeDay(now, clock.timeZone),
-    };
-  }), [now]);
-
-  const dateLabel = now
-    ? new Intl.DateTimeFormat("en-GB", {
-        weekday: "long",
-        day: "2-digit",
-        month: "long",
-      }).format(now)
-    : "Monday, 27 July";
-  const workingClocks = now
-    ? clocks.filter((clock) => {
-        const hour = dateParts(now, clock.timeZone).hour;
-        return hour >= 9 && hour < 17;
-      }).length
-    : 3;
-  const overlapLabel = workingClocks >= 2
-    ? `${workingClocks} zones within working hours`
-    : "Not all in working hours";
-
-  return (
-    <div className="app-window">
-      <div className="menu-preview">
-        <span className="live-dot" />
-        {clocks.slice(0, 3).map((clock, index) => (
-          <span key={clock.code}>
-            {index > 0 && <i />} {clock.code} {clock.time}
-          </span>
-        ))}
-      </div>
-      <div className="popover-head">
-        <span>{dateLabel}</span>
-        <button aria-label="Add a city">+</button>
-      </div>
-      <div className="clock-list">
-        {clocks.map((clock) => (
-          <div className="clock-row" key={clock.city}>
-            <span className={`status-icon ${clock.active ? "day" : "night"}`}>
-              {clock.active ? "✦" : "●"}
-            </span>
-            <span className="clock-place">
-              <strong>{clock.city}</strong>
-              <small>{clock.code} · {clock.offset}</small>
-            </span>
-            {clock.day && <span className="next-day">{clock.day}</span>}
-            <time>{clock.time}</time>
-          </div>
-        ))}
-      </div>
-      <div className="timeline">
-        <div className="timeline-labels"><span>−12h</span><strong>Now</strong><span>+12h</span></div>
-        <div className="timeline-track"><i /><b /></div>
-        <p><span /> {overlapLabel}</p>
-      </div>
-      <div className="window-foot"><span>4 clocks</span><span>Settings&nbsp;&nbsp; Quit</span></div>
-    </div>
-  );
-}
-
-function FeatureVisual({ type }: { type: string }) {
-  if (type === "clocks") {
-    return (
-      <div className="mini-clocks" aria-hidden="true">
-        <div><span className="day-pip" /><strong>San Francisco</strong><time>09:41</time></div>
-        <div><span className="day-pip" /><strong>London</strong><time>17:41</time></div>
-        <div><span className="night-pip" /><strong>Tokyo</strong><time>01:41</time></div>
-      </div>
-    );
-  }
-
-  if (type === "scrub") {
-    return (
-      <div className="mini-scrub" aria-hidden="true">
-        <div><span>−6h</span><strong>Now</strong><span>+6h</span></div>
-        <section><i /><b /></section>
-        <p><span /> 3 zones within working hours</p>
-      </div>
-    );
-  }
-
-  if (type === "menu") {
-    return (
-      <div className="mini-menu" aria-hidden="true">
-        <span>SFO&nbsp; 09:41</span><i />
-        <span>LON&nbsp; 17:41</span><i />
-        <span>BLR&nbsp; 22:11</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mini-private" aria-hidden="true">
-      <span className="privacy-ring"><i>✓</i></span>
-      <div><strong>Your data stays local</strong><small>No account · No network · No tracking</small></div>
-    </div>
-  );
-}
-
 export default function Home() {
-  return (
-    <>
-      <a className="skip-link" href="#content">Skip to content</a>
-      <header className="site-nav shell">
-        <a className="brand" href="#top" aria-label="ZoneBar home">
-          <img src="/zonebar-icon.png" alt="" width="34" height="34" />
-          <span>ZoneBar</span>
-        </a>
-        <nav aria-label="Main navigation">
-          <a href="#features">Features</a>
-          <a href="#install">Install</a>
-          <a href="#faq">FAQ</a>
-        </nav>
-        <div className="nav-actions">
-          <a
-            className="github-link"
-            href={sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="View ZoneBar source code on GitHub"
-            title="View source code on GitHub"
-          >
-            <GitHubMark />
-          </a>
-          <a className="nav-cta" href={downloadUrl}>Download <span>↓</span></a>
+  return <>
+    <SiteHeader />
+    <main id="main-content" tabIndex={-1}>
+      <section className="hero" aria-labelledby="hero-title">
+        <div className="hero-pattern" aria-hidden="true" />
+        <div className="hero-content">
+          <div className="eyebrow hero-eyebrow">A LITTLE CLOSER, WHEREVER YOU ARE</div>
+          <h1 id="hero-title">Different timezones.<br /><span>Beautifully in sync.</span></h1>
+          <p className="hero-description">Keep your people’s time close. A small native Mac app for world clocks, easier conversations, and finding a moment that works for everyone.</p>
+          <div className="hero-actions"><DownloadButton /><Link className="button text-button" href="/docs/">Get to know ZoneBar <ArrowRight size={18} /></Link></div>
+          <div className="compatibility"><span>macOS 14+</span><span>Apple silicon & Intel</span><span>Free & open source</span></div>
         </div>
-      </header>
-
-      <main id="content">
-        <section className="hero shell" id="top">
-          <div className="hero-copy">
-            <p className="eyebrow"><span /> Built for macOS</p>
-            <h1>World clocks,<br />without the clutter.</h1>
-            <p className="hero-lede">
-              ZoneBar puts your team’s timezones in the menu bar and helps you
-              find a good time to talk—without opening another browser tab.
-            </p>
-            <div className="hero-actions">
-              <a className="button primary" href={downloadUrl}>
-                <span className="download-mark">↓</span> Download for macOS
-              </a>
-              <a className="text-link" href="#features">Explore features <span>→</span></a>
-            </div>
-            <div className="hero-meta">
-              <span><b>Free</b> and open source</span>
-              <span><b>macOS 14+</b> Sonoma or later</span>
-              <span><b>Universal</b> Apple silicon + Intel</span>
-            </div>
-          </div>
-
-          <div className="product-stage" aria-label="ZoneBar app preview">
-            <div className="stage-grid" />
-            <ClockPopover />
-            <span className="float-note note-one"><b>4</b> timezones</span>
-            <span className="float-note note-two"><i /> overlap found</span>
-          </div>
-        </section>
-
-        <section className="quick-proof">
-          <div className="shell proof-grid">
-            <div><strong>176+</strong><span>cities included</span></div>
-            <div><strong>0</strong><span>accounts required</span></div>
-            <div><strong>1 click</strong><span>to check every clock</span></div>
-            <p>Fast, native, and designed to disappear into your workflow.</p>
-          </div>
-        </section>
-
-        <section className="features-section shell" id="features">
-          <header className="section-head">
-            <p className="eyebrow"><span /> What it does</p>
-            <h2>Less converting.<br />More coordinating.</h2>
-            <p>Everything you need for global work, kept deliberately small.</p>
-          </header>
-
-          <div className="feature-grid">
-            {features.map((feature) => (
-              <article className={`feature-card feature-${feature.visual}`} key={feature.index}>
-                <div className="feature-top">
-                  <span>{feature.index}</span>
-                  <FeatureVisual type={feature.visual} />
-                </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.copy}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="install-section" id="install">
-          <div className="install shell">
-            <div className="install-copy">
-              <p className="eyebrow"><span /> Quick install</p>
-              <h2>On your Mac<br />in under a minute.</h2>
-              <p>A familiar drag-to-Applications install. No installer wizard and no account setup.</p>
-              <a className="button primary" href={downloadUrl}>Download ZoneBar <span>↓</span></a>
-              <nav className="project-actions" aria-label="ZoneBar project support">
-                <a href={sourceUrl} target="_blank" rel="noreferrer">
-                  <GitHubMark /> View source
-                </a>
-                <a href={issueUrl} target="_blank" rel="noreferrer">
-                  <Bug aria-hidden="true" /> Report an issue
-                </a>
-                <a href={featureUrl} target="_blank" rel="noreferrer">
-                  <Lightbulb aria-hidden="true" /> Request a feature
-                </a>
-              </nav>
-            </div>
-            <ol className="install-steps">
-              <li><span>01</span><div><strong>Download the DMG</strong><p>Get the latest signed and notarized release.</p></div></li>
-              <li><span>02</span><div><strong>Move it to Applications</strong><p>Drag ZoneBar into the Applications shortcut.</p></div></li>
-              <li><span>03</span><div><strong>Pick your cities</strong><p>ZoneBar appears in the menu bar and stays out of the way.</p></div></li>
-            </ol>
-          </div>
-        </section>
-
-        <section className="faq shell" id="faq">
-          <header>
-            <p className="eyebrow"><span /> FAQ</p>
-            <h2>A few useful details.</h2>
-          </header>
-          <div className="faq-grid">
-            <article><h3>Does ZoneBar collect data?</h3><p>No. It has no account, analytics, or network access. Your settings stay on your Mac.</p></article>
-            <article><h3>Which Macs work?</h3><p>Any Apple silicon or Intel Mac running macOS 14 Sonoma or later.</p></article>
-            <article><h3>Is the download safe?</h3><p>Public builds are signed with Developer ID and notarized by Apple before release.</p></article>
-            <article><h3>Can it open at login?</h3><p>Yes. Turn on “Launch at login” in ZoneBar’s General settings.</p></article>
-          </div>
-        </section>
-
-        <section className="final-cta shell">
-          <div>
-            <img src="/zonebar-icon.png" alt="" width="52" height="52" />
-            <h2>Keep every timezone close.</h2>
-            <p>Free, native, and ready for your menu bar.</p>
-          </div>
-          <a className="button light" href={downloadUrl}>Download for macOS <span>↓</span></a>
-        </section>
-      </main>
-
-      <footer className="site-footer shell" id="privacy">
-        <a className="brand" href="#top"><img src="/zonebar-icon.png" alt="" width="30" height="30" /><span>ZoneBar</span></a>
-        <div className="footer-center">
-          <p>Private by design. ZoneBar collects no personal data.</p>
-          <nav className="footer-links" aria-label="Project links">
-            <a href={sourceUrl} target="_blank" rel="noreferrer">
-              <GitHubMark /> Source code
-            </a>
-            <a href={issueUrl} target="_blank" rel="noreferrer">
-              <Bug aria-hidden="true" /> Report an issue
-            </a>
-            <a href={featureUrl} target="_blank" rel="noreferrer">
-              <Lightbulb aria-hidden="true" /> Request a feature
-            </a>
-          </nav>
-        </div>
-        <p>© 2026 GigCodes</p>
-      </footer>
-    </>
-  );
+        <figure className="clock-stage"><ClockPreview /><figcaption>Try the timeline. This interactive website preview shows live city times.</figcaption></figure>
+      </section>
+      <section id="features" className="section-container features-section">
+        <div className="section-heading"><div className="eyebrow">LESS CONVERTING. MORE CONNECTING.</div><h2>A world of time.<br />A little less distance.</h2><p>Thoughtful tools for the people you work and live with.</p></div>
+        <div className="feature-grid">{features.map(({ icon: Icon, ...feature }) => <Link className="feature-card" href={`/docs/#${feature.link}`} key={feature.label}>
+          <div className="feature-top"><Icon size={24} strokeWidth={1.6} /><span className="eyebrow">{feature.label}</span><ArrowUpRight className="feature-arrow" size={17} /></div><h3>{feature.title}</h3><p>{feature.text}</p><div className="feature-chips">{feature.chips.map(chip => <span key={chip}>{chip}</span>)}</div>
+        </Link>)}</div>
+      </section>
+      <section className="workflow-section"><div className="section-container workflow-inner"><div className="workflow-copy"><div className="eyebrow">FROM DOWNLOAD TO YOUR NEXT HELLO</div><h2>Make room for<br />a world of time.</h2><p className="workflow-description">A familiar Mac install. No account, subscription, or complicated setup.</p><Link className="inline-link" href="/docs/">Read the getting started guide <ArrowRight size={18} /></Link></div><ol className="setup-steps"><li><span>01</span><div><h3>Download ZoneBar.</h3><p>Open the signed and notarized disk image.</p></div></li><li><span>02</span><div><h3>Move it into Applications.</h3><p>Drag ZoneBar onto the Applications shortcut, then open the app.</p></div></li><li><span>03</span><div><h3>Bring your people closer.</h3><p>Add your cities and choose which clocks belong in your menu bar.</p></div></li></ol></div></section>
+      <section id="install" className="section-container install-section"><div className="install-card"><Image className="brand-mark" src="/zonebar-icon.png" alt="" width={54} height={54} /><div className="eyebrow">A SMALL APP WITH THE WORLD IN MIND</div><h2>Keep every<br />timezone close.</h2><p>Download. Pick your cities. Find your moment.</p><DownloadButton /><div className="install-meta"><ShieldCheck size={18} /> Signed & notarized · macOS 14+</div><a href="https://github.com/kkz6/ZoneBar/releases/latest" className="release-link">Release notes and checksums <ArrowUpRight size={15} /></a></div></section>
+      <section id="faq" className="section-container faq-section"><div><div className="eyebrow">A FEW GOOD QUESTIONS</div><h2>Before you<br />{" "}settle in.</h2><p>Something else on your mind?<br /><a className="inline-link" href="https://github.com/kkz6/ZoneBar/issues">Ask us on GitHub <ArrowUpRight size={16} /></a></p></div><div className="faq-list">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<Plus className="faq-plus" size={18} /><Minus className="faq-minus" size={18} /></summary><p>{answer}</p></details>)}</div></section>
+    </main><SiteFooter />
+  </>;
 }

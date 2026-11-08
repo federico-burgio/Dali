@@ -48,3 +48,6 @@ Package.resolved
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
+
+# Website incremental type-check cache
+website/*.tsbuildinfo

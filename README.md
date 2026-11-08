@@ -68,6 +68,10 @@ ends. Use **Show all** to temporarily pause filtering, or disable it from
 
 ## Getting Started
 
+### Download the app
+
+[Download ZoneBar for macOS](https://github.com/kkz6/ZoneBar/releases/latest/download/ZoneBar.dmg), open the disk image, and drag ZoneBar into Applications. Visit the [website](https://zonebar.karti.dev/) and [getting-started guide](https://zonebar.karti.dev/docs/) for setup and feature instructions.
+
 ### Build from Source
 
 ```bash

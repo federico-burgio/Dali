@@ -28,7 +28,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: website/package-lock.json
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Build static website
         working-directory: website
-        run: npm run build:pages
+        run: npm test && npm run lint && npx tsc --noEmit
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

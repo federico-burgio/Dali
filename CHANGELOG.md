@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Matched the website and new getting-started guide to the Morrow family design, with ivory surfaces, slate headings, teal actions, shared fonts, and an original linked-path pattern.
+- Added an interactive world-clock preview, responsive navigation, current Focus and Calendar guidance, and accurate offline/update privacy information.
+
 ## [0.5.4] - 2026-10-29
 
 ### Fixed

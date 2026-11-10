@@ -133,6 +133,12 @@
 "Night threshold" = "Night threshold";
 "Midnight" = "Midnight";
 "Show calendar" = "Show calendar";
+"Show calendar in expanded menu" = "Show calendar in expanded menu";
+"Show a month above your clocks." = "Show a month above your clocks.";
+"Choose which calendars and items appear in the month and timeline. Uncheck every calendar to hide all items." = "Choose which calendars and items appear in the month and timeline. Uncheck every calendar to hide all items.";
+"Today" = "Today";
+"Previous month" = "Previous month";
+"Next month" = "Next month";
 "Local clock" = "Local clock";
 "Show time without a city label" = "Show time without a city label";
 "None" = "None";

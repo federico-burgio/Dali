@@ -15,6 +15,8 @@ struct CalendarSelectionTests {
         var items: [EKEvent] = []
         var calendarReads = 0
         var eventReads = 0
+        var requestedIntervals: [DateInterval] = []
+        let notifications = NotificationCenter()
 
         init() { defaults = UserDefaults(suiteName: suiteName)! }
         deinit { defaults.removePersistentDomain(forName: suiteName) }
@@ -38,9 +40,11 @@ struct CalendarSelectionTests {
         func makeService(access: CalendarAccessState = .connected) -> CalendarEventService {
             CalendarEventService(
                 eventStore: store,
+                notificationCenter: notifications,
                 accessStateOverride: access,
-                eventFetcher: { _, _ in
+                eventFetcher: { start, end in
                     self.eventReads += 1
+                    self.requestedIntervals.append(DateInterval(start: start, end: end))
                     return self.items
                 },
                 calendarFetcher: {
@@ -157,10 +161,87 @@ struct CalendarSelectionTests {
         let service = fixture.makeService(access: access)
         service.refreshCalendars()
         service.refresh(for: fixture.date)
+        service.refreshMonth(in: MonthCalendar(containing: fixture.date, timeZone: TimeZone(secondsFromGMT: 0)!).visibleInterval)
         #expect(service.availableCalendars.isEmpty)
         #expect(service.events.isEmpty)
+        #expect(service.monthEvents.isEmpty)
         #expect(fixture.calendarReads == 0)
         #expect(fixture.eventReads == 0)
+    }
+
+    @Test func monthIncludesAllDayEventsWithoutReplacingTimelineEvents() {
+        let fixture = Fixture()
+        let work = fixture.addCalendar("Work")
+        fixture.addEvent("Meeting", from: work)
+        let allDay = EKEvent(eventStore: fixture.store)
+        allDay.calendar = work
+        allDay.title = "Birthday"
+        allDay.isAllDay = true
+        allDay.startDate = Calendar.current.startOfDay(for: fixture.date)
+        allDay.endDate = Calendar.current.date(byAdding: .day, value: 1, to: allDay.startDate)
+        fixture.items.append(allDay)
+        let service = fixture.makeService()
+        service.refresh(for: fixture.date)
+        let timelineEvents = service.events
+        #expect(timelineEvents.count == 1)
+        let month = MonthCalendar(containing: fixture.date, timeZone: TimeZone(secondsFromGMT: 0)!)
+        service.refreshMonth(in: month.visibleInterval)
+        #expect(service.monthEvents.count == 2)
+        #expect(service.events == timelineEvents)
+        #expect(fixture.requestedIntervals.last == month.visibleInterval)
+    }
+
+    @Test func monthSelectionsAndModesUpdateImmediatelyAndAllUncheckedMeansNoReads() {
+        let fixture = Fixture()
+        let work = fixture.addCalendar("Work")
+        let home = fixture.addCalendar("Home")
+        fixture.addEvent("Meeting", from: work)
+        fixture.addEvent("OOO", from: work)
+        fixture.addEvent("Appointment", from: home)
+        let service = fixture.makeService()
+        let range = MonthCalendar(containing: fixture.date, timeZone: TimeZone(secondsFromGMT: 0)!).visibleInterval
+        service.refreshMonth(in: range)
+        #expect(service.monthEvents.count == 3)
+        service.setDisplayMode(.unavailable, for: work.calendarIdentifier)
+        #expect(service.monthEvents.count == 2)
+        service.setCalendarEnabled(work.calendarIdentifier, enabled: false)
+        #expect(service.monthEvents.map(\.calendarIdentifier) == [home.calendarIdentifier])
+        service.setCalendarEnabled(home.calendarIdentifier, enabled: false)
+        let reads = fixture.eventReads
+        service.refreshMonth(in: range)
+        #expect(service.monthEvents.isEmpty)
+        #expect(fixture.eventReads == reads)
+    }
+
+    @Test func storeChangesRefreshBrowsedMonthAndClosingReleasesMonthQuery() async throws {
+        let fixture = Fixture()
+        let work = fixture.addCalendar("Work")
+        fixture.addEvent("Meeting", from: work)
+        let service = fixture.makeService()
+        let range = MonthCalendar(containing: fixture.date, timeZone: TimeZone(secondsFromGMT: 0)!).visibleInterval
+        service.refresh(for: fixture.date)
+        service.refreshMonth(in: range)
+        fixture.addEvent("New event", from: work)
+        fixture.notifications.post(name: .EKEventStoreChanged, object: fixture.store)
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(service.monthEvents.count == 2)
+        #expect(fixture.requestedIntervals.last == range)
+        service.clearMonth()
+        #expect(service.monthEvents.isEmpty)
+        service.setDisplayMode(.events, for: work.calendarIdentifier)
+        #expect(fixture.requestedIntervals.last?.duration ?? 0 <= 25 * 3600)
+    }
+
+    @Test func monthQueryClipsResultsToVisibleRange() {
+        let fixture = Fixture()
+        let work = fixture.addCalendar("Work")
+        fixture.addEvent("Meeting", from: work)
+        fixture.addEvent("Outside", from: work)
+        fixture.items[1].startDate = fixture.date.addingTimeInterval(100 * 86400)
+        fixture.items[1].endDate = fixture.items[1].startDate.addingTimeInterval(3600)
+        let service = fixture.makeService()
+        service.refreshMonth(in: MonthCalendar(containing: fixture.date, timeZone: TimeZone(secondsFromGMT: 0)!).visibleInterval)
+        #expect(service.monthEvents.count == 1)
     }
 
     @Test func unsupportedSavedModesFallBackToBothWithoutLosingExclusions() {

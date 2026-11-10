@@ -10,6 +10,13 @@ struct CalendarPane: View {
 
         SettingsPane(section: SettingsSection.calendar) {
             SettingsGroup {
+                SettingRow(title: "Show calendar in expanded menu", subtitle: "Show a month above your clocks.") {
+                    Toggle("", isOn: $settings.showPopoverCalendar)
+                        .settingsToggle()
+                }
+
+                SettingsDivider()
+
                 SettingRow(
                     icon: "calendar",
                     iconColor: .blue,
@@ -52,7 +59,7 @@ struct CalendarPane: View {
                     }
                 }
 
-                SettingsNote(text: "Choose which calendars and items appear on the timeline. Uncheck every calendar to hide all items.")
+                SettingsNote(text: "Choose which calendars and items appear in the month and timeline. Uncheck every calendar to hide all items.")
             }
 
             SettingsNote(

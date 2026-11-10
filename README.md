@@ -26,6 +26,9 @@ ZoneBar replaces heavy Electron-based world clock apps with a fast, native exper
   event at the selected comparison time, and opens it directly in Calendar
 - Quick-add a city inline with the **+** button
 - Settings and quit in the footer
+- Optional Monday-first month calendar above the clocks, with month navigation and a Today button
+- Up to three event dots per day in the enabled calendars' colors; the month remains usable without calendar access
+- The month follows the selected calendar city's timezone and includes all-day and multi-day events
 
 ### Menu Bar
 - Displays selected clock times directly in the macOS menu bar

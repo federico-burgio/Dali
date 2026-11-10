@@ -11,7 +11,7 @@ struct ClockPopover: View {
     @State private var offset: TimeInterval = 0
 
     private let rowHeight: CGFloat = 46
-    private let maxVisibleRows = 6
+    private var maxVisibleRows: Int { settings.showPopoverCalendar ? 3 : 6 }
 
     private var visibleClocks: [WorldClock] { focusFilter.popoverClocks(from: store.clocks) }
 
@@ -32,13 +32,21 @@ struct ClockPopover: View {
                 CitySearchView(autoFocus: true) { addExpanded = false }
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.bottom, DS.Spacing.sm)
-            } else if visibleClocks.isEmpty {
-                emptyState
             } else {
-                clockList
+                if settings.showPopoverCalendar {
+                    PopoverMonthCalendar()
+                        .padding(.horizontal, DS.Spacing.md)
+                        .padding(.bottom, DS.Spacing.sm)
+                }
 
-                Divider().opacity(0.4)
-                TimeScrubberView(offset: $offset, baseDate: ticker.now, clocks: visibleClocks)
+                if visibleClocks.isEmpty {
+                    emptyState
+                } else {
+                    clockList
+
+                    Divider().opacity(0.4)
+                    TimeScrubberView(offset: $offset, baseDate: ticker.now, clocks: visibleClocks)
+                }
             }
 
             Divider().opacity(0.4)

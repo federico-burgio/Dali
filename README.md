@@ -1,5 +1,12 @@
 # ZoneBar
 
+> **This is an unofficial community fork** of [kkz6/ZoneBar](https://github.com/kkz6/ZoneBar)
+> by [karti.dev](https://karti.dev), used under the MIT License. It is not affiliated with
+> or endorsed by the original author, and it is distributed as source only: there are no
+> signed or notarized binaries and no automatic updates. Please report problems with this
+> fork in this repository, not to the upstream project. Original copyright and license
+> are preserved in [LICENSE](LICENSE).
+
 A lightweight native macOS menu bar app for tracking world clocks. Built with
 SwiftUI and a focused AppKit settings-window host, targeting macOS 14+ (Sonoma).
 
@@ -63,11 +70,9 @@ ends. Use **Show all** to temporarily pause filtering, or disable it from
 ### System Integration
 - Pure menu bar app (no dock icon)
 - Launch at login via SMAppService
-- Signed automatic updates and manual update checks via Sparkle
 - Respects system dark/light mode
 - App sandbox
 - Calendar data stays on-device and is only read after explicit permission
-- Hardened runtime and direct-download distribution support
 
 ## Requirements
 
@@ -76,19 +81,24 @@ ends. Use **Show all** to temporarily pause filtering, or disable it from
 
 ## Getting Started
 
-### Download the app
-
-[Download ZoneBar for macOS](https://github.com/kkz6/ZoneBar/releases/latest/download/ZoneBar.dmg), open the disk image, and drag ZoneBar into Applications. Visit the [website](https://zonebar.karti.dev/) and [getting-started guide](https://zonebar.karti.dev/docs/) for setup and feature instructions.
-
 ### Build from Source
 
+ZoneBar is distributed as source only. Build it on your own Mac:
+
 ```bash
-git clone https://github.com/kkz6/ZoneBar.git
-cd ZoneBar
+git clone https://github.com/federico-burgio/Dali.git
+cd Dali
 open ZoneBar.xcodeproj
 ```
 
-Then press **Cmd+R** in Xcode to build and run.
+Press **Cmd+R** in Xcode to build and run. To keep a copy in `/Applications`, set the
+scheme's Run configuration to Release (Product → Scheme → Edit Scheme) or build it
+with `xcodebuild -scheme ZoneBar -configuration Release`, then copy `ZoneBar.app`
+from the build products folder. Xcode signs local builds for you; no Apple Developer
+account is required. Because those builds have no stable signing identity, macOS may
+ask for Calendar access again after you rebuild.
+
+There is no automatic updater. To update, pull the latest changes and rebuild.
 
 ### First Launch
 
@@ -127,7 +137,6 @@ ZoneBar/
 - **State management:** Observation (`@Observable`) with environment injection
 - **Persistence:** JSON file for clocks, UserDefaults for settings
 - **Timer:** Minute-boundary aligned for accurate clock updates
-- **Updates:** Sparkle appcast generated and Ed25519-signed by the release workflow
 - **City data:** Hybrid approach -- bundled city database + Apple `TimeZone` API fallback
 
 ## Roadmap

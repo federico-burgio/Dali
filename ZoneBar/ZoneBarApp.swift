@@ -6,7 +6,6 @@ struct ZoneBarApp: App {
     @State private var settings = AppSettings()
     @State private var ticker = TimeTicker()
     @State private var focusFilter = FocusClockFilter.shared
-    @State private var updater = AppUpdater()
     @State private var calendarService = CalendarEventService()
     @State private var settingsWindowController = SettingsWindowController(
         configuration: SettingsWindowConfiguration(
@@ -24,7 +23,6 @@ struct ZoneBarApp: App {
                 .environment(store)
                 .environment(settings)
                 .environment(ticker)
-                .environment(updater)
                 .environment(calendarService)
                 .environment(focusFilter)
                 .environment(
@@ -41,10 +39,7 @@ struct ZoneBarApp: App {
         .menuBarExtraStyle(.window)
         .commands {
             CommandGroup(replacing: .appSettings) {
-                OpenSettingsButton(
-                    updater: updater,
-                    openSettings: openSettings
-                )
+                OpenSettingsButton(openSettings: openSettings)
             }
         }
     }
@@ -55,7 +50,6 @@ struct ZoneBarApp: App {
                 store: store,
                 settings: settings,
                 ticker: ticker,
-                updater: updater,
                 calendarService: calendarService,
                 focusFilter: focusFilter
             )
@@ -69,7 +63,6 @@ private struct ZoneBarSettingsRoot: View {
     let store: ClockStore
     let settings: AppSettings
     let ticker: TimeTicker
-    let updater: AppUpdater
     let calendarService: CalendarEventService
     let focusFilter: FocusClockFilter
 
@@ -78,7 +71,6 @@ private struct ZoneBarSettingsRoot: View {
             .environment(store)
             .environment(settings)
             .environment(ticker)
-            .environment(updater)
             .environment(calendarService)
             .environment(focusFilter)
             .environment(\.locale, settings.locale)
@@ -111,21 +103,12 @@ private struct MenuPanelPresentationAnimation: ViewModifier {
 
 /// Menu command (⌘,) that opens the custom settings window.
 private struct OpenSettingsButton: View {
-    let updater: AppUpdater
     let openSettings: () -> Void
 
     var body: some View {
-        Group {
-            Button("Check for Updates…") {
-                updater.checkForUpdates()
-            }
-
-            Divider()
-
-            Button("Settings…") {
-                openSettings()
-            }
-            .keyboardShortcut(",", modifiers: .command)
+        Button("Settings…") {
+            openSettings()
         }
+        .keyboardShortcut(",", modifiers: .command)
     }
 }

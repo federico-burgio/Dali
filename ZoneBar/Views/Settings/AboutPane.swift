@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AboutPane: View {
-    @Environment(AppUpdater.self) private var updater
     var usesApplicationIcon = true
 
     private var version: String {
@@ -33,47 +32,13 @@ struct AboutPane: View {
             .padding(.vertical, DS.Spacing.lg)
 
             SettingsGroup {
-                Button {
-                    updater.checkForUpdates()
-                } label: {
-                    SettingRow(icon: "arrow.triangle.2.circlepath", iconColor: .blue, title: "Check for Updates") {
-                        if updater.isPreparingUpdateCheck {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                }
-                .buttonStyle(.plain)
-                .disabled(updater.isPreparingUpdateCheck)
-
+                LinkRow(icon: "chevron.left.forwardslash.chevron.right", color: .black, title: "Source Code", url: "https://github.com/federico-burgio/Dali")
                 SettingsDivider()
-                SettingRow(
-                    icon: "arrow.clockwise.circle.fill",
-                    iconColor: .green,
-                    title: "Automatically Check for Updates"
-                ) {
-                    Toggle(
-                        "",
-                        isOn: Binding(
-                            get: { updater.automaticallyChecksForUpdates },
-                            set: { updater.automaticallyChecksForUpdates = $0 }
-                        )
-                    )
-                    .settingsToggle()
-                }
-
-                SettingsDivider()
-                LinkRow(icon: "chevron.left.forwardslash.chevron.right", color: .black, title: "Source Code", url: "https://github.com/kkz6/ZoneBar")
-                SettingsDivider()
-                LinkRow(icon: "ant.fill", color: .red, title: "Report an Issue", url: "https://github.com/kkz6/ZoneBar/issues")
+                LinkRow(icon: "ant.fill", color: .red, title: "Report an Issue", url: "https://github.com/federico-burgio/Dali/issues")
             }
 
-            Link(destination: URL(string: "https://karti.dev")!) {
-                Text("Made by karti.dev")
+            Link(destination: URL(string: "https://github.com/kkz6/ZoneBar")!) {
+                Text("Fork of ZoneBar by karti.dev")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
             }

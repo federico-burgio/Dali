@@ -2,8 +2,7 @@
 # Release build installed into /Applications. Signs with the code-signing
 # identity named by CERT_NAME (default "ZoneBar Local Signing") if it exists in
 # your keychain, otherwise falls back to ad-hoc signing.
-# Hardened runtime is off because its library validation rejects Sparkle when
-# neither side has a Team ID (self-signed).
+# Hardened runtime is turned off for these local builds because there is no Team ID.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IDENTITY="${CERT_NAME:-ZoneBar Local Signing}"

@@ -73,6 +73,10 @@ final class AppSettings {
         didSet { defaults.set(showCalendarEvents, forKey: Keys.showCalendarEvents) }
     }
 
+    var showPopoverCalendar: Bool {
+        didSet { defaults.set(showPopoverCalendar, forKey: Keys.showPopoverCalendar) }
+    }
+
     var locale: Locale { language.locale }
 
     private let defaults: UserDefaults
@@ -92,6 +96,7 @@ final class AppSettings {
             Keys.theme: AppTheme.system.rawValue,
             Keys.language: AppLanguage.automatic.rawValue,
             Keys.showCalendarEvents: false,
+            Keys.showPopoverCalendar: false,
         ])
 
         is24Hour = defaults.bool(forKey: Keys.is24Hour)
@@ -111,6 +116,7 @@ final class AppSettings {
         theme = AppTheme(rawValue: defaults.string(forKey: Keys.theme) ?? "") ?? .system
         language = AppLanguage(rawValue: defaults.string(forKey: Keys.language) ?? "") ?? .automatic
         showCalendarEvents = defaults.bool(forKey: Keys.showCalendarEvents)
+        showPopoverCalendar = defaults.bool(forKey: Keys.showPopoverCalendar)
     }
 
     private enum Keys {
@@ -127,5 +133,6 @@ final class AppSettings {
         static let theme = "appearanceMode"
         static let language = "appLanguage"
         static let showCalendarEvents = "showCalendarEvents"
+        static let showPopoverCalendar = "showPopoverCalendar"
     }
 }

@@ -145,6 +145,7 @@ enum CalendarAccessState: Equatable {
 final class CalendarEventService {
     private(set) var accessState: CalendarAccessState
     private(set) var events: [CalendarTimelineEvent] = []
+    private(set) var monthEvents: [CalendarMonthEvent] = []
     private(set) var availableCalendars: [EKCalendar] = []
     private(set) var excludedCalendarIDs: Set<String>
     private(set) var calendarDisplayModes: [String: CalendarDisplayMode]
@@ -159,6 +160,7 @@ final class CalendarEventService {
     @ObservationIgnored private let accessStateOverride: CalendarAccessState?
     @ObservationIgnored private var storeObserver: NSObjectProtocol?
     @ObservationIgnored private var loadedDay: Date?
+    @ObservationIgnored private var loadedMonthRange: DateInterval?
 
     init(
         eventStore: EKEventStore = EKEventStore(),
@@ -211,7 +213,10 @@ final class CalendarEventService {
         do {
             let granted = try await eventStore.requestFullAccessToEvents()
             accessState = resolvedAccessState
-            if granted { refresh(for: loadedDay ?? Date()) }
+            if granted {
+                refresh(for: loadedDay ?? Date())
+                if let loadedMonthRange { refreshMonth(in: loadedMonthRange) }
+            }
             return granted
         } catch {
             accessState = resolvedAccessState
@@ -233,12 +238,14 @@ final class CalendarEventService {
         else { excludedCalendarIDs.insert(identifier) }
         defaults.set(excludedCalendarIDs.sorted(), forKey: "excludedCalendarIDs")
         refresh(for: loadedDay ?? Date())
+        if let loadedMonthRange { refreshMonth(in: loadedMonthRange) }
     }
 
     func setDisplayMode(_ mode: CalendarDisplayMode, for identifier: String) {
         calendarDisplayModes[identifier] = mode
         defaults.set(calendarDisplayModes.mapValues(\.rawValue), forKey: "calendarDisplayModes")
         refresh(for: loadedDay ?? Date())
+        if let loadedMonthRange { refreshMonth(in: loadedMonthRange) }
     }
 
     func refreshCalendars() {
@@ -246,6 +253,7 @@ final class CalendarEventService {
         guard accessState.canReadEvents else {
             availableCalendars = []
             events = []
+            monthEvents = []
             return
         }
         availableCalendars = calendarFetcher().sorted {
@@ -295,6 +303,51 @@ final class CalendarEventService {
                 if $0.startDate == $1.startDate { return $0.endDate < $1.endDate }
                 return $0.startDate < $1.startDate
             }
+    }
+
+    /// Month markers include ordinary all-day events as well as timed items.
+    /// Their range and storage are independent from the timeline's loaded day.
+    func refreshMonth(in interval: DateInterval) {
+        loadedMonthRange = interval
+        refreshCalendars()
+        guard accessState.canReadEvents, interval.duration > 0 else {
+            monthEvents = []
+            return
+        }
+
+        let selected = availableCalendars.filter { isCalendarEnabled($0.calendarIdentifier) }
+        guard !selected.isEmpty else {
+            monthEvents = []
+            return
+        }
+        let selectedIDs = Set(selected.map(\.calendarIdentifier))
+        let fetched: [EKEvent]
+        if let eventFetcher {
+            fetched = eventFetcher(interval.start, interval.end)
+        } else {
+            let predicate = eventStore.predicateForEvents(
+                withStart: interval.start, end: interval.end, calendars: selected
+            )
+            fetched = eventStore.events(matching: predicate)
+        }
+
+        monthEvents = fetched.compactMap { event in
+            let identifier = event.calendar?.calendarIdentifier ?? ""
+            let kind = CalendarTimelineEvent.Kind.classify(
+                title: event.title ?? "", availability: event.availability
+            )
+            guard event.status != .canceled,
+                  selectedIDs.contains(identifier),
+                  displayMode(for: identifier).includes(kind),
+                  let start = event.startDate, let end = event.endDate,
+                  start < end, start < interval.end, end > interval.start else { return nil }
+            return CalendarMonthEvent(calendarIdentifier: identifier, startDate: start, endDate: end)
+        }
+    }
+
+    func clearMonth() {
+        loadedMonthRange = nil
+        monthEvents = []
     }
 
     func events(at date: Date) -> [CalendarTimelineEvent] {
@@ -353,6 +406,7 @@ final class CalendarEventService {
         } else {
             refreshCalendars()
         }
+        if let loadedMonthRange { refreshMonth(in: loadedMonthRange) }
     }
 
     private static var currentAccessState: CalendarAccessState {

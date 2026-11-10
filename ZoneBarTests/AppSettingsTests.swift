@@ -114,6 +114,18 @@ struct AppSettingsTests {
         #expect(AppSettings(defaults: defaults).localClockID == nil)
     }
 
+    @Test func monthCalendarIsOptInAndIndependentOfEventAndMenuBarToggles() throws {
+        let (defaults, suiteName) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let settings = AppSettings(defaults: defaults)
+        #expect(!settings.showPopoverCalendar)
+        settings.showPopoverCalendar = true
+        let reloaded = AppSettings(defaults: defaults)
+        #expect(reloaded.showPopoverCalendar)
+        #expect(!reloaded.showCalendarEvents)
+        #expect(!reloaded.showMenuBarCalendar)
+    }
+
     private func makeDefaults() throws -> (UserDefaults, String) {
         let suiteName = "AppSettingsTests.\(UUID().uuidString)"
         return (try #require(UserDefaults(suiteName: suiteName)), suiteName)

@@ -88,7 +88,7 @@ cd ZoneBar
 open ZoneBar.xcodeproj
 ```
 
-Then press **Cmd+R** in Xcode to build and run.
+Run `scripts/setup-local-signing.sh` once so rebuilds keep a stable identity and macOS does not ask for Calendar access again each time (see [CONTRIBUTING](CONTRIBUTING.md#local-code-signing-recommended)). Then press **Cmd+R** in Xcode to build and run.
 
 ### First Launch
 

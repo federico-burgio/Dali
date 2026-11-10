@@ -362,7 +362,7 @@
 				MARKETING_VERSION = 0.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gigcodes.zonebar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SPARKLE_PUBLIC_ED_KEY = "yjXJxgc5jeVnKyI/DPtPPvK5jDLSMtxLLYrAojAsqes=";
+				SPARKLE_PUBLIC_ED_KEY = "puG1bfWhWNfMfsEj7clnFpSkouA+9jzFeei8Hj+VtEc=";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -391,7 +391,7 @@
 				MARKETING_VERSION = 0.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gigcodes.zonebar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SPARKLE_PUBLIC_ED_KEY = "yjXJxgc5jeVnKyI/DPtPPvK5jDLSMtxLLYrAojAsqes=";
+				SPARKLE_PUBLIC_ED_KEY = "puG1bfWhWNfMfsEj7clnFpSkouA+9jzFeei8Hj+VtEc=";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};

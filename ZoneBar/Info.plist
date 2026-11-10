@@ -33,7 +33,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://github.com/kkz6/ZoneBar/releases/latest/download/appcast.xml</string>
+	<string>https://github.com/federico-burgio/Dali/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>$(SPARKLE_PUBLIC_ED_KEY)</string>
 </dict>

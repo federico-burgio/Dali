@@ -25,11 +25,8 @@
 "Untitled event" = "タイトルなしのイベント";
 "ZoneBar reads calendar titles, times, and availability on this Mac. It never edits your calendar." = "ZoneBarはこのMac上のカレンダーのタイトル、時刻、公開状況を読み取ります。カレンダーを編集することはありません。";
 "Appearance" = "外観";
-"Automatically Check for Updates" = "アップデートを自動的に確認";
 "Automatic follows your Mac’s language." = "「自動」ではMacの言語設定に従います。";
 "Automatic" = "自動";
-"Check for Updates" = "アップデートを確認";
-"Check for Updates…" = "アップデートを確認…";
 "Choose how ZoneBar follows your system appearance." = "ZoneBarの外観をシステム設定に合わせる方法を選択します。";
 "Choose which clocks appear in the menu bar from the Clocks section." = "メニューバーに表示する時計は「時計」セクションで選択できます。";
 "City name" = "都市名";
@@ -46,7 +43,7 @@
 "Launch at login" = "ログイン時に起動";
 "Language" = "言語";
 "Light" = "ライト";
-"Made by karti.dev" = "karti.dev 制作";
+"Fork of ZoneBar by karti.dev" = "ZoneBar（karti.dev）のフォーク";
 "Japanese" = "日本語";
 "Menu Bar" = "メニューバー";
 "New York → NY" = "ニューヨーク → NY";

@@ -39,8 +39,6 @@ enum SettingsPreviewFixtures {
         startsAutomatically: false
     )
 
-    static let updater = AppUpdater(startingUpdater: false)
-
     static let calendarService = CalendarEventService(
         accessStateOverride: .notDetermined
     )
@@ -52,7 +50,6 @@ extension View {
         environment(SettingsPreviewFixtures.store)
             .environment(SettingsPreviewFixtures.settings)
             .environment(SettingsPreviewFixtures.ticker)
-            .environment(SettingsPreviewFixtures.updater)
             .environment(SettingsPreviewFixtures.calendarService)
             .environment(SettingsPreviewFixtures.focusFilter)
             .tint(.zoneAccent)

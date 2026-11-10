@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fork changes
+- This repository is an unofficial source-only fork of kkz6/ZoneBar (MIT License).
+- Removed the Sparkle updater, update keys and update UI, the release and notarization tooling, the Pages workflow and the website, and the upstream funding file.
+- Changed the bundle identifier to `com.federicoburgio.zonebar` so a build of this fork does not share settings or permissions with the upstream app.
+- Updated links and copyright text to credit the upstream project.
+
 ### Changed
 - Matched the website and new getting-started guide to the Morrow family design, with ivory surfaces, slate headings, teal actions, shared fonts, and an original linked-path pattern.
 - Added an interactive world-clock preview, responsive navigation, current Focus and Calendar guidance, and accurate offline/update privacy information.

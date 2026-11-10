@@ -25,11 +25,8 @@
 "Untitled event" = "Untitled event";
 "ZoneBar reads calendar titles, times, and availability on this Mac. It never edits your calendar." = "ZoneBar reads calendar titles, times, and availability on this Mac. It never edits your calendar.";
 "Appearance" = "Appearance";
-"Automatically Check for Updates" = "Automatically Check for Updates";
 "Automatic follows your Mac’s language." = "Automatic follows your Mac’s language.";
 "Automatic" = "Automatic";
-"Check for Updates" = "Check for Updates";
-"Check for Updates…" = "Check for Updates…";
 "Choose how ZoneBar follows your system appearance." = "Choose how ZoneBar follows your system appearance.";
 "Choose which clocks appear in the menu bar from the Clocks section." = "Choose which clocks appear in the menu bar from the Clocks section.";
 "City name" = "City name";
@@ -46,7 +43,7 @@
 "Launch at login" = "Launch at login";
 "Language" = "Language";
 "Light" = "Light";
-"Made by karti.dev" = "Made by karti.dev";
+"Fork of ZoneBar by karti.dev" = "Fork of ZoneBar by karti.dev";
 "Japanese" = "Japanese";
 "Menu Bar" = "Menu Bar";
 "New York → NY" = "New York → NY";

@@ -6,8 +6,8 @@ Thanks for your interest in contributing to ZoneBar.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kkz6/ZoneBar.git
-   cd ZoneBar
+   git clone https://github.com/federico-burgio/Dali.git
+   cd Dali
    ```
 
 2. Open in Xcode:
@@ -17,29 +17,8 @@ Thanks for your interest in contributing to ZoneBar.
 
 3. Build and run with **Cmd+R**.
 
-### Local Code Signing (recommended)
-
-An ad-hoc signed Debug build gets a new identity on every rebuild, so macOS asks
-for Calendar access again each time. To avoid that without an Apple Developer
-account, create a self-signed certificate once:
-
-```bash
-scripts/setup-local-signing.sh
-```
-
-The script creates a "ZoneBar Local Signing" certificate in your login keychain
-(macOS asks for your password once to trust it for code signing) and writes
-`Configuration/LocalSigning.xcconfig` so Debug builds use it. If Xcode or
-`codesign` asks to use the key, choose **Always Allow**. Run it again with
-`--force` to regenerate the configuration.
-
-If you have an Apple Developer account instead, copy
-`Configuration/LocalSigning.xcconfig.example`, replace `YOUR_TEAM_ID` with your
-team ID and keep `Apple Development` as the identity.
-
-`LocalSigning.xcconfig` is ignored by Git, so personal signing preferences are
-never committed. Release signing is controlled by the release workflow and is not
-changed by this local configuration.
+This fork is source-only. It does not publish signed builds or updates, so there is
+nothing to configure for signing. Xcode signs local builds automatically.
 
 ### Requirements
 - macOS 14.0+ (Sonoma)

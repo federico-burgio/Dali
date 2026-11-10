@@ -167,6 +167,9 @@ extension SettingRow where Trailing == EmptyView {
 extension Color {
     /// Mint/seafoam accent used across toggles and controls.
     static let zoneAccent = Color(red: 0.36, green: 0.82, blue: 0.64)
+
+    /// Periwinkle sampled from the macOS Do Not Disturb reference (#909EFD).
+    static let quietHoursPurple = Color(.sRGB, red: 144 / 255, green: 158 / 255, blue: 253 / 255, opacity: 1)
 }
 
 // MARK: - Toggle styling helper

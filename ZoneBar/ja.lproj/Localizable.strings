@@ -128,3 +128,15 @@
 "Items shown from %@" = "%@の表示項目";
 "No calendars found. Add an account in Calendar on this Mac." = "カレンダーが見つかりません。このMacのカレンダーアプリでアカウントを追加してください。";
 "Choose which calendars and items appear on the timeline. Uncheck every calendar to hide all items." = "タイムラインに表示するカレンダーと項目を選択します。すべてのチェックを外すと、項目は表示されません。";
+"Clock hours" = "時計の表示時間帯";
+"Morning threshold" = "朝の開始時刻";
+"Night threshold" = "夜の開始時刻";
+"Midnight" = "午前0時";
+"Show calendar" = "カレンダーを表示";
+"Local clock" = "ローカルの時計";
+"Show time without a city label" = "都市名なしで時刻を表示";
+"None" = "なし";
+"Calendar city" = "カレンダーの都市";
+"Day number in the selected city" = "選択した都市の日付を表示";
+"Add a city first." = "先に都市を追加してください。";
+"Clocks turn purple before the morning threshold and from the night threshold onward, using each clock’s local time." = "各時計の現地時間で、朝の開始時刻より前と夜の開始時刻以降は紫色で表示されます。";

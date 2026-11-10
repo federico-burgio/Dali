@@ -60,4 +60,69 @@ struct MenuBarRendererTests {
         let text = MenuBarRenderer.text(for: clocks, at: now, is24Hour: true, compact: false, showDate: false, showDayNightIcon: true, separator: .spaces)
         #expect(text.hasPrefix("☀"))
     }
+
+    @Test(arguments: [true, false])
+    func localClockOmitsOnlyItsCityInFullAndCompactModes(compact: Bool) {
+        let london = clock("London", "Europe/London")
+        let tokyo = clock("Tokyo", "Asia/Tokyo")
+        let text = MenuBarRenderer.text(
+            for: [london, tokyo], at: now, is24Hour: true, compact: compact,
+            showDate: false, showDayNightIcon: false, separator: .pipe,
+            localClockID: london.id, locale: Locale(identifier: "en_GB")
+        )
+        #expect(text == (compact ? "12:00  |  TOK 21:00" : "12:00  |  Tokyo 21:00"))
+    }
+
+    @Test func localClockKeepsItsDateIconAndQuietStatus() {
+        let tokyo = clock("Tokyo", "Asia/Tokyo")
+        let segments = MenuBarRenderer.segments(
+            for: [tokyo], at: now, is24Hour: false, compact: false,
+            showDate: true, showDayNightIcon: true,
+            localClockID: tokyo.id, locale: Locale(identifier: "en_US")
+        )
+        #expect(segments.count == 1)
+        #expect(segments[0].isQuiet)
+        #expect(segments[0].text.hasPrefix("☾ 9:00"))
+        #expect(segments[0].text.contains("PM"))
+        #expect(segments[0].text.contains("Jan"))
+        #expect(!segments[0].text.contains("Tokyo"))
+    }
+
+    @Test func missingOrHiddenLocalClockDoesNotHideAnotherCity() {
+        let london = clock("London", "Europe/London")
+        let hidden = clock("Tokyo", "Asia/Tokyo", menuBar: false)
+        for localID in [UUID(), hidden.id] {
+            let text = MenuBarRenderer.text(
+                for: [london, hidden], at: now, is24Hour: true, compact: false,
+                showDate: false, showDayNightIcon: false, separator: .spaces,
+                localClockID: localID, locale: Locale(identifier: "en_GB")
+            )
+            #expect(text == "London 12:00")
+        }
+    }
+
+    @Test func quietStatusAndIconsFollowCustomHoursPerClock() {
+        let clocks = [
+            clock("London", "Europe/London"),
+            clock("Tokyo", "Asia/Tokyo"),
+            clock("Hidden", "UTC", menuBar: false),
+        ]
+        let segments = MenuBarRenderer.segments(
+            for: clocks, at: now, is24Hour: true, compact: false,
+            showDate: false, showDayNightIcon: true,
+            displayHours: ClockDisplayHours(morningMinute: 480, nightMinute: 1200),
+            locale: Locale(identifier: "en_GB")
+        )
+        #expect(segments == [
+            .init(text: "☀ London 12:00", isQuiet: false),
+            .init(text: "☾ Tokyo 21:00", isQuiet: true),
+        ])
+
+        let laterMorning = MenuBarRenderer.segments(
+            for: clocks, at: now, is24Hour: true, compact: false,
+            showDate: false, showDayNightIcon: false,
+            displayHours: ClockDisplayHours(morningMinute: 780, nightMinute: 1320)
+        )
+        #expect(laterMorning.map(\.isQuiet) == [true, false])
+    }
 }

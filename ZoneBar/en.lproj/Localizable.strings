@@ -128,3 +128,15 @@
 "Items shown from %@" = "Items shown from %@";
 "No calendars found. Add an account in Calendar on this Mac." = "No calendars found. Add an account in Calendar on this Mac.";
 "Choose which calendars and items appear on the timeline. Uncheck every calendar to hide all items." = "Choose which calendars and items appear on the timeline. Uncheck every calendar to hide all items.";
+"Clock hours" = "Clock hours";
+"Morning threshold" = "Morning threshold";
+"Night threshold" = "Night threshold";
+"Midnight" = "Midnight";
+"Show calendar" = "Show calendar";
+"Local clock" = "Local clock";
+"Show time without a city label" = "Show time without a city label";
+"None" = "None";
+"Calendar city" = "Calendar city";
+"Day number in the selected city" = "Day number in the selected city";
+"Add a city first." = "Add a city first.";
+"Clocks turn purple before the morning threshold and from the night threshold onward, using each clock’s local time." = "Clocks turn purple before the morning threshold and from the night threshold onward, using each clock’s local time.";

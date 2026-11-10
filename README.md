@@ -31,9 +31,14 @@ ZoneBar replaces heavy Electron-based world clock apps with a fast, native exper
 - Displays selected clock times directly in the macOS menu bar
 - Compact mode abbreviates city names (New York → NY)
 - Optional date and day/night (☀/☾) prefixes
+- Optional compact calendar before the clocks, showing the day of the month in a selected saved city's timezone
+- The calendar uses the same separator as the clocks; its simplified outline leaves more room for the day number
+- Choose a local clock to hide its city label in the menu bar (choose None to restore every label)
 - Configurable separator between clocks
 - 12-hour or 24-hour time format
-- Falls back to a clock icon when no clocks are selected for display
+- Morning and night threshold sliders in 30-minute steps (06:00–20:00 by default)
+- Clocks turn purple outside those hours in their own timezone; the menu bar preview updates live
+- Falls back to a clock icon when neither clocks nor the calendar are displayed
 
 ### Settings (sidebar window)
 - **General:** time format, date display, launch at login
